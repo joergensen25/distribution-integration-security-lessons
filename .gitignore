@@ -4,9 +4,6 @@
 *.ipr
 *.iws
 
-# IntelliJ build output
-out/
-
 # Java
 *.class
 
@@ -16,6 +13,12 @@ target/
 # Gradle
 .gradle/
 build/
+
+# IntelliJ build output
+out/
+
+# Logs
+*.log
 
 # OS files
 .DS_Store
