@@ -1,4 +1,6 @@
 use databaseB
+drop table if exists Kunde
+drop table if exists Postering
 
 create table Kunde (
 kundeid int primary key,

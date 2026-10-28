@@ -1,5 +1,9 @@
 use databaseA
 
+drop table if exists Kunde
+drop table if exists Bestilling
+drop view if exists AlleKunder
+
 create table Kunde (
 kundeid int primary key,
 navn varchar(25),
@@ -11,7 +15,6 @@ kundeid int,
 varenavn varchar(25),
 antalVarer int
 )
-
 
 insert into Kunde (kundeid, navn, postnr) values 
 (1, 'Anders', 8000),
@@ -30,17 +33,19 @@ insert into Bestilling (kundeid, varenavn, antalVarer) values
 select * from Kunde join Bestilling on Kunde.kundeid = Bestilling.kundeid
 
 
+-- Begge kundetabeller samlet:
+go
 create view AlleKunder as 
 select kundeid, navn, postnr from Kunde 
 union
 select kundeid, navn, postnr from databaseB.dbo.Kunde
-
-
+go
 
 select * from AlleKunder
 
 
-
+-- Trigger på view der indsætter i begge tabeller:
+go
 create trigger trigger_insertAlleKunder 
 on AlleKunder
 instead of insert
@@ -56,14 +61,24 @@ begin
 	from inserted
 	where kundeid % 2 = 1
 end
+go
 
 select * from AlleKunder
 
-
+-- Test insert (ulige id = tabel B)
 insert into Allekunder (kundeid, navn, postnr) values
 (7, 'Jens', 8210)
 
 
-select * from AlleKunder
+-- Query der samler posteringer:
+select ak.kundeid, ak.navn, ak.postnr, sum(p.beloeb) from AlleKunder ak
+join databaseB.dbo.Postering p on ak.kundeid = p.kundeid
+group by
+ak.kundeid,
+ak.navn,
+ak.postnr
 
 
+
+select * from AlleKunder ak
+join databaseB.dbo.Postering p on ak.kundeid = p.kundeid
